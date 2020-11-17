@@ -51,3 +51,10 @@ class Similarity(tf.keras.layers.Layer):
         similarity = self.compute_similarity(repeated_cvectors, repeated_qvectors)
 
         return similarity
+
+if __name__ == '__main__':
+    c = tf.ones(shape=(10,100,50))
+    q = tf.ones(shape=(10,100,50))
+
+    s= Similarity()
+    s([c,q])
