@@ -11,6 +11,7 @@ tf.get_logger().setLevel(logging.ERROR)
 import layers
 import preprocess
 import numpy as np
+import pickle
 
 print("tf.__version__:", tf.__version__)
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -253,6 +254,21 @@ if __name__ == '__main__':
     # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
 
     # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
+
+    for data in [train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y]:
+        variable_name = list(dict(data=data).keys())[0]
+        np.save(f'save\\{variable_name}.npy', data)
+
+    output_hal = open("save\\ds.pkl", 'wb')
+    str = pickle.dumps(ds)
+    output_hal.write(str)
+    output_hal.close()
+
+
+    # with open("save\\ds.pkl", 'rb') as file:
+    #     ds = pickle.loads(file.read())
+
+
     print(train_cc.shape, train_qc.shape, train_cw.shape, train_qw.shape, train_y.shape)
     print(test_cc.shape, test_qc.shape, test_cw.shape ,test_qw.shape, test_y.shape)
 

@@ -1,10 +1,14 @@
 import numpy as np
 import data_io as pio
 import nltk
-[['aaa', 'bbbb'],['ccc','ddd']]
-[[['a','a','a'],['b','b','b','b']],[['c','c','c'],['d','d','d']]]
 
-GLOVE_FILE_PATH = ".\data\glove\glove.6B.50d.txt"
+[['aaa', 'bbbb'], ['ccc', 'ddd']]
+[[['a', 'a', 'a'], ['b', 'b', 'b', 'b']], [['c', 'c', 'c'], ['d', 'd', 'd']]]
+
+GLOVE_FILE_PATH = r"data/glove/glove.6B.50d.txt"
+# /data/glove/glove.6B.50d.txt
+
+
 class Preprocessor:
     def __init__(self, datasets_fp, max_length=384, stride=128):
         self.datasets_fp = datasets_fp
@@ -32,13 +36,12 @@ class Preprocessor:
         self.ch2id = dict(zip(self.charset, idx))
         self.id2ch = dict(zip(idx, self.charset))
         # print(self.ch2id, self.id2ch)
-    
+
     def build_wordset(self):
         idx = list(range(len(self.word_list)))
         self.w2id = dict(zip(self.word_list, idx))
         self.id2w = dict(zip(idx, self.word_list))
         # print(self.w2id, self.id2w)
-
 
     def dataset_char_info(self, inn):
         charset = set()
@@ -77,10 +80,12 @@ class Preprocessor:
     def char_encode(self, context, question):
         q_seg_list = self.seg_text(question)
         c_seg_list = self.seg_text(context)
-        question_encode = self.convert2id_char(max_char_len=self.max_char_len,begin=True, end=True, word_list=q_seg_list)
+        question_encode = self.convert2id_char(max_char_len=self.max_char_len, begin=True, end=True,
+                                               word_list=q_seg_list)
         print(question_encode)
         left_length = self.max_length - len(question_encode)
-        context_encode = self.convert2id_char(max_char_len=self.max_char_len,maxlen=left_length, end=True, word_list=c_seg_list)
+        context_encode = self.convert2id_char(max_char_len=self.max_char_len, maxlen=left_length, end=True,
+                                              word_list=c_seg_list)
         cq_encode = question_encode + context_encode
 
         assert len(cq_encode) == self.max_length
@@ -99,9 +104,9 @@ class Preprocessor:
 
         return cq_encode
 
-    def convert2id_char(self, max_char_len=None, maxlen=None, begin=False, end=False, word_list = []):
+    def convert2id_char(self, max_char_len=None, maxlen=None, begin=False, end=False, word_list=[]):
         char_list = []
-        char_list = [[self.get_id_char('[CLS]')] + [self.get_id_char('[PAD]')] * (max_char_len-1)] * begin + char_list
+        char_list = [[self.get_id_char('[CLS]')] + [self.get_id_char('[PAD]')] * (max_char_len - 1)] * begin + char_list
         for word in word_list:
             ch = [ch for ch in word]
             if max_char_len is not None:
@@ -144,7 +149,7 @@ class Preprocessor:
 
     def get_dataset(self, ds_fp):
         ccs, qcs, cws, qws, be = [], [], [], [], []
-        for _, cc, qc,cw, qw, b, e in self.get_data(ds_fp):
+        for _, cc, qc, cw, qw, b, e in self.get_data(ds_fp):
             ccs.append(cc)
             qcs.append(qc)
 
@@ -153,9 +158,10 @@ class Preprocessor:
             cws.append(cw)
             qws.append(qw)
             be.append((b, e))
+            if len(be) % 100 == 0:
+                print(len(be))
         # print(c for c in ccs)
         return map(np.array, (ccs, qcs, cws, qws, be))
-
 
     def get_data(self, ds_fp):
         dataset = pio.load(ds_fp)
@@ -173,26 +179,27 @@ class Preprocessor:
             for i, w in enumerate(c_seg_list):
                 if i == 0:
                     continue
-                if b > len_all_char -1 and b <= len_all_char+len(w) -1:
+                if b > len_all_char - 1 and b <= len_all_char + len(w) - 1:
                     b = i + 1
-                if e > len_all_char -1 and e <= len_all_char+len(w) -1:
+                if e > len_all_char - 1 and e <= len_all_char + len(w) - 1:
                     e = i + 1
                 len_all_char += len(w)
-                
+
             if ne == -1:
                 b = e = 0
-            yield qid, c_char_ids, q_char_ids,  c_word_ids, q_word_ids, b, e
+            yield qid, c_char_ids, q_char_ids, c_word_ids, q_word_ids, b, e
 
     def get_sent_ids_char(self, maxlen=0, begin=False, end=True, word_list=[]):
-        return self.convert2id_char(max_char_len=self.max_char_len, maxlen=maxlen, begin=False, end=True, word_list = word_list)
+        return self.convert2id_char(max_char_len=self.max_char_len, maxlen=maxlen, begin=False, end=True,
+                                    word_list=word_list)
 
     def get_sent_ids_word(self, maxlen=0, begin=False, end=True, word_list=[]):
-        return self.convert2id_word(maxlen=maxlen, begin=False, end=True, word_list = self.word_list)
-    
+        return self.convert2id_word(maxlen=maxlen, begin=False, end=True, word_list=self.word_list)
+
     def seg_text(self, text):
         words = [word.lower() for word in nltk.word_tokenize(text)]
         return words
-    
+
     def load_glove(self, glove_file_path):
         with open(glove_file_path, encoding='utf-8') as fr:
             for line in fr:
@@ -201,6 +208,7 @@ class Preprocessor:
                 self.embeddings_index[word] = coefs
                 self.word_list.append(word)
                 self.embedding_matrix.append(coefs)
+
 
 if __name__ == '__main__':
     p = Preprocessor([
