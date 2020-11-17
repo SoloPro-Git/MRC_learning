@@ -5,6 +5,10 @@ Glove用词向量训练为50dim的w2v
 字符cnn用one hot编码每个字母然后再cnn卷积到50dim
 
 2）preprocess.py 实现nltk对语料的切分（30'）
+Done
+
 3）main.py 实现从glove加载embedding 初始化（15'）
+
 4）main.py 实现卷积char级别编码（15'）
+
 5) main.py 实现word级别glove编码和char级别编码的拼接（10'）
