@@ -1,0 +1,12 @@
+for data in  [train_cc, train_qc, train_cw, train_qw, train_y ,test_cc, test_qc, test_cw, test_qw, test_y,variable_name,variable_name,ds.embedding_matrix]:
+	variable_name = list(dict(data=data).keys())[0]
+	numpy.save(f'save\\{variable_name}.npy',data)
+	
+output_hal = open("save\\ds.pkl", 'wb')
+str = pickle.dumps(ds)
+output_hal.write(str)
+output_hal.close()
+
+rq = class()
+with open("1.pkl",'rb') as file:
+rq  = pickle.loads(file.read())
