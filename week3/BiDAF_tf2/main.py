@@ -239,35 +239,36 @@ def accuracy(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    ds = preprocess.Preprocessor([
-        './data/squad/train-v1.1.json',
-        './data/squad/dev-v1.1.json',
-        './data/squad/dev-v1.1.json'
-    ])
-    # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
-    # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
-    
-    train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
+    # ds = preprocess.Preprocessor([
+    #     './data/squad/train-v1.1.json',
+    #     './data/squad/dev-v1.1.json',
+    #     './data/squad/dev-v1.1.json'
+    # ])
+    # # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
+    # # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
+    #
+    # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
+    #
+    # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
+    #
+    # # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
+    #
+    # # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
+    #
+    # data = [train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y]
+    # variable_name = list(dict(data=data).keys())[0]
+    # np.save(f'save/{variable_name}.npy', data)
+    #
+    # output_hal = open("save/ds.pkl", 'wb')
+    # str = pickle.dumps(ds)
+    # output_hal.write(str)
+    # output_hal.close()
 
-    test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
 
-    # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
-
-    # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
-
-    for data in [train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y]:
-        variable_name = list(dict(data=data).keys())[0]
-        np.save(f'save\\{variable_name}.npy', data)
-
-    output_hal = open("save\\ds.pkl", 'wb')
-    str = pickle.dumps(ds)
-    output_hal.write(str)
-    output_hal.close()
-
-
-    # with open("save\\ds.pkl", 'rb') as file:
-    #     ds = pickle.loads(file.read())
-
+    with open("save//ds.pkl", 'rb') as file:
+        ds = pickle.loads(file.read())
+    data_load = np.load(f'save/data.npy')
+    train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y = data_load
 
     print(train_cc.shape, train_qc.shape, train_cw.shape, train_qw.shape, train_y.shape)
     print(test_cc.shape, test_qc.shape, test_cw.shape ,test_qw.shape, test_y.shape)
