@@ -44,4 +44,3 @@ if __name__ == '__main__':
 
     att_layer = C2QAttention()
     att_layer.call(simi, q)
-m
