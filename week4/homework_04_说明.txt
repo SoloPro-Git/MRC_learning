@@ -1,0 +1,15 @@
+使用bert提取句向量或句向量（二选一），替换 BiDAF中的embedding部分，可采用以下两种方案：
+
+1、直接参考bert源码中的extract_features提取特征，将bert词/句向量整理成文件，在Bi-DAF代码中的preprocess中加载，可参考glove的实现代码。
+
+2、可以采用bert-as-service工具，提取bert的词/句向量信息，除采用静态文件加载外，也可以在preprocess中构造bert-as-service的client直接请求其server获取向量保存在变量中，server可在外部启动。
+
+注意：
+1、对于提取的embedding注意维度的对齐。若直接提取句向量需要进一步的处理维度，可以打印维度进行调试。
+2、若使用bert-as-service注意版本和参数的对应，可查看github页面获取参数的说明。
+
+评分：
+1. 无论通过哪种方式引入了bert的向量并对其进行了赋值给内部变量（60'）
+2. 对train test数据进行处理（10'）
+3. 使用向量在embedding层初始化(20')
+4. 全部代码正确（10'）

@@ -244,25 +244,26 @@ if __name__ == '__main__':
         './data/squad/dev-v1.1.json',
         './data/squad/dev-v1.1.json'
     ])
-    # # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
-    # # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
-    #
-    train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
-    #
-    # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
-    #
-    # # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
-    #
-    # # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
-    #
-    # data = [train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y]
-    # variable_name = list(dict(data=data).keys())[0]
-    # np.save(f'save/{variable_name}.npy', data)
-    #
-    # output_hal = open("save/ds.pkl", 'wb')
-    # str = pickle.dumps(ds)
-    # output_hal.write(str)
-    # output_hal.close()
+    # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
+    # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
+
+    train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
+
+    test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
+
+    ds.word_to_txt()
+    # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
+
+    # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
+
+    data = [train_cw, train_qw, train_y,  test_cw, test_qw, test_y]
+    variable_name = list(dict(data=data).keys())[0]
+    np.save(f'save/{variable_name}.npy', data)
+
+    output_hal = open("save/ds.pkl", 'wb')
+    str = pickle.dumps(ds)
+    output_hal.write(str)
+    output_hal.close()
 
 
     with open("save//ds.pkl", 'rb') as file:
