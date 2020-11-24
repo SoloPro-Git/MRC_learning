@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
     with open("save//ds.pkl", 'rb') as file:
         ds = pickle.loads(file.read())
-    data_load = np.load(f'save/data.npy')
+    data_load = np.load(f'save/data.npy',allow_pickle=True)
     train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y = data_load
 
     print(train_cc.shape, train_qc.shape, train_cw.shape, train_qw.shape, train_y.shape)
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     bidaf.build_model()
     bidaf.model.fit(
         [train_cc, train_qc, train_cw, train_qw], train_y,
-        batch_size=64,
+        batch_size=32,
         epochs=10,
         validation_data=([test_cc, test_qc, test_cw, test_qw], test_y)
     )
