@@ -233,23 +233,23 @@ class Preprocessor:
         with open('split_word.txt', 'w') as f:
             for i in range(len(self.id2w)):
                 values = self.id2w[i]
-                f.write(values + "\r")
+                f.write(values + " ||| ")
 
     def txt_to_bert_emb(self):
         # tf1 虚拟环境获取词向量
-        os.popen(r'''cd ~/学习/nlp学习/bert && /Users/solo/anaconda3/envs/tf1/bin/python extract_features.py
-        --input_file=/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/split_word.txt \
-        --output_file=data/output.json \
-        --vocab_file=bert_base/vocab.txt \
-        --bert_config_file=bert_base/bert_config.json \
-        --init_checkpoint=bert_base/bert_model.ckpt \
-        --layers=-1 \
-        --max_seq_length=128 \
-        --batch_size=8''')
+        os.popen(r'''cd ~/学习/nlp学习/bert && /Users/solo/anaconda3/envs/tf1/bin/python extract_features.py \
+  --input_file=/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/split_word.txt \
+  --output_file=/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json \
+  --vocab_file=bert_base/vocab.txt \
+  --bert_config_file=bert_base/bert_config.json \
+  --init_checkpoint=bert_base/bert_model.ckpt \
+  --layers=-1 \
+  --max_seq_length=128 \
+  --batch_size=8''')
 
     def word_to_bert_emb(self):
         self.word_to_txt(self.id2w)
-
+        self.txt_to_bert_emb()
         self.load_bert_emb(BERT_EMB_PATH)
 
 

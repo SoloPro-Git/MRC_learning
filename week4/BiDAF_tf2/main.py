@@ -252,6 +252,7 @@ if __name__ == '__main__':
     test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
 
     ds.word_to_txt()
+    ds.txt_to_bert_emb()
     # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
 
     # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')

@@ -56,8 +56,8 @@ def mkdir(dir_path):
     os.makedirs(dir_path, exist_ok=True)
 
 if __name__ == "__main__":
-    d = {'Name': 'Testing', 'Arr': [1, 2, 3], '測試': '項目'}
-    dump(d, 'a.json', is_ascii=True)
+    # d = {'Name': 'Testing', 'Arr': [1, 2, 3], '測試': '項目'}
+    # dump(d, 'a.json', is_ascii=True)
     # dump_json(d, './a.json')
     # dd = load_json('./a.json')
     # assert d == dd
@@ -76,6 +76,10 @@ if __name__ == "__main__":
 
     # print('Success!')
 
-    os.remove('a.json')
+    # os.remove('a.json')
     # os.remove('a.pkl')
     # os.remove('a.csv')
+    bert_vec = load('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
+    feature = bert_vec['features']
+    # feature[1]['layers'][0]['values']
+    pass
