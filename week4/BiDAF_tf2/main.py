@@ -71,28 +71,28 @@ class BiDAF:
         """
         # 1 embedding 层
         # TODO：homework：使用glove word embedding（或自己训练的w2v） 和 CNN char embedding 
-        cinn_c = tf.keras.layers.Input(shape=(self.clen,self.max_char_len), name='context_input_char')
-        qinn_c = tf.keras.layers.Input(shape=(self.qlen,self.max_char_len), name='question_input_char')
-        embedding_layer_char = tf.keras.layers.Embedding(self.max_features, self.emb_size, embeddings_initializer='uniform')
-        
-        emb_cc = embedding_layer_char(cinn_c)
-        emb_qc = embedding_layer_char(qinn_c)
-
-        c_conv_out = []
-        filter_sizes = sum(list(np.array(self.conv_layers).T[0]))
-        assert filter_sizes==self.emb_size
-        for filters, kernel_size in self.conv_layers:
-            conv = tf.keras.layers.Conv2D(filters=filters,kernel_size=[kernel_size,self.emb_size],strides=1,activation='relu',padding='same')(emb_cc)
-            conv = tf.reduce_max(conv, 2)
-            c_conv_out.append(conv)
-        c_conv_out = tf.keras.layers.concatenate(c_conv_out)
-
-        q_conv_out = []
-        for filters, kernel_size in self.conv_layers:
-            conv = tf.keras.layers.Conv2D(filters=filters,kernel_size=[kernel_size,self.emb_size],strides=1,activation='relu',padding='same')(emb_qc)
-            conv = tf.reduce_max(conv, 2)
-            q_conv_out.append(conv)
-        q_conv_out = tf.keras.layers.concatenate(q_conv_out)
+        # cinn_c = tf.keras.layers.Input(shape=(self.clen,self.max_char_len), name='context_input_char')
+        # qinn_c = tf.keras.layers.Input(shape=(self.qlen,self.max_char_len), name='question_input_char')
+        # embedding_layer_char = tf.keras.layers.Embedding(self.max_features, self.emb_size, embeddings_initializer='uniform')
+        #
+        # emb_cc = embedding_layer_char(cinn_c)
+        # emb_qc = embedding_layer_char(qinn_c)
+        #
+        # c_conv_out = []
+        # filter_sizes = sum(list(np.array(self.conv_layers).T[0]))
+        # assert filter_sizes==self.emb_size
+        # for filters, kernel_size in self.conv_layers:
+        #     conv = tf.keras.layers.Conv2D(filters=filters,kernel_size=[kernel_size,self.emb_size],strides=1,activation='relu',padding='same')(emb_cc)
+        #     conv = tf.reduce_max(conv, 2)
+        #     c_conv_out.append(conv)
+        # c_conv_out = tf.keras.layers.concatenate(c_conv_out)
+        #
+        # q_conv_out = []
+        # for filters, kernel_size in self.conv_layers:
+        #     conv = tf.keras.layers.Conv2D(filters=filters,kernel_size=[kernel_size,self.emb_size],strides=1,activation='relu',padding='same')(emb_qc)
+        #     conv = tf.reduce_max(conv, 2)
+        #     q_conv_out.append(conv)
+        # q_conv_out = tf.keras.layers.concatenate(q_conv_out)
 
         cinn_w = tf.keras.layers.Input(shape=(self.clen,), name='context_input_word')
         qinn_w = tf.keras.layers.Input(shape=(self.qlen,), name='question_input_word')
@@ -102,8 +102,11 @@ class BiDAF:
         emb_cw = embedding_layer_word(cinn_w)
         emb_qw = embedding_layer_word(qinn_w)
         print('emb_cw',emb_cw.shape)
-        cemb = tf.concat([emb_cw, c_conv_out], axis=2)
-        qemb = tf.concat([emb_qw, q_conv_out], axis=2)
+        # cemb = tf.concat([emb_cw, c_conv_out], axis=2)
+        # qemb = tf.concat([emb_qw, q_conv_out], axis=2)
+
+        cemb = emb_cw
+        qemb = emb_qw
         print('cemb',cemb.shape)
         for i in range(self.num_highway_layers):
             """
@@ -166,7 +169,7 @@ class BiDAF:
         output_layer = layers.Combine(name='CombineOutputs')
         out = output_layer([span_begin_prob, span_end_prob])
 
-        inn = [cinn_c, qinn_c, cinn_w, qinn_w]
+        inn = [ cinn_w, qinn_w]
 
         self.model = tf.keras.models.Model(inn, out)
         self.model.summary(line_length=128)
@@ -251,8 +254,9 @@ if __name__ == '__main__':
 
     test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
 
-    ds.word_to_txt()
-    ds.txt_to_bert_emb()
+    # ds.word_to_txt()
+    # ds.txt_to_bert_emb()
+    ds.load_bert_emb('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
     # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
 
     # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
@@ -279,7 +283,7 @@ if __name__ == '__main__':
         clen=ds.max_clen,
         qlen=ds.max_qlen,
         max_char_len=ds.max_char_len,
-        emb_size=50,
+        emb_size=len(ds.embedding_matrix[0]),
         vocab_size = len(ds.word_list),
         embedding_matrix = ds.embedding_matrix,
         max_features=len(ds.charset),

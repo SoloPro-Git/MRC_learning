@@ -3,6 +3,22 @@ import json
 import numpy as np
 import pandas as pd
 import pickle as pk
+import jsonlines
+def load_jsonl(fpath):
+    jsonl = []
+    with open(fpath, "r+", encoding="utf8") as f:
+        for item in jsonlines.Reader(f):
+            jsonl.append(item)
+    return jsonl
+
+def get_bert_jsonl_emb(jsonl):
+    word_emb_dict = {}
+    for line in jsonl:
+        word_infoes =  line['features']
+        for word_info in word_infoes:
+            if word_info['token'] not in word_emb_dict:
+                word_emb_dict[word_info['token']] = word_info['layers'][0]['values']
+    return word_emb_dict
 
 def dump_json(obj, fpath, encoding='UTF-8', is_ascii=False, indent=4):
     with open(fpath, 'w', encoding=encoding) as f:
@@ -79,7 +95,8 @@ if __name__ == "__main__":
     # os.remove('a.json')
     # os.remove('a.pkl')
     # os.remove('a.csv')
-    bert_vec = load('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
-    feature = bert_vec['features']
-    # feature[1]['layers'][0]['values']
+    bert_vec = load_jsonl('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
+    dict_bert_emb = get_bert_jsonl_emb(bert_vec)
+        # feature = line['features']
+        # feature[1]['layers'][0]['values']
     pass

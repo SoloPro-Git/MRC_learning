@@ -220,16 +220,20 @@ class Preprocessor:
     #             self.embedding_matrix.append(coefs)
 
     def load_bert_emb(self, bert_file_path):
-        with open(bert_file_path, encoding='utf-8') as fr:
-            for line in fr:
-                word, coefs = line.split(maxsplit=1)
-                coefs = np.fromstring(coefs, sep=' ')
-                self.embeddings_index[word] = coefs
-                self.word_list.append(word)
-                self.embedding_matrix.append(coefs)
+        """读取bert的词向量并且生成emb——matrix"""
+        self.get_id2word()
+        bert_vec = pio.load_jsonl(bert_file_path)
+        dict_bert_emb = pio.get_bert_jsonl_emb(bert_vec)
+
+        for id in range(len(self.id2w)):
+            if self.id2w[id] in dict_bert_emb:
+                self.embedding_matrix.append(dict_bert_emb[self.id2w[id]])
+            else:
+                self.embedding_matrix.append(len(dict_bert_emb['[CLS]']) * [0])
+
 
     def word_to_txt(self):
-        self.get_id2word()
+        """切分词到txt中"""
         with open('split_word.txt', 'w') as f:
             for i in range(len(self.id2w)):
                 values = self.id2w[i]
@@ -237,6 +241,7 @@ class Preprocessor:
 
     def txt_to_bert_emb(self):
         # tf1 虚拟环境获取词向量
+        """跑bert获取词向量"""
         os.popen(r'''cd ~/学习/nlp学习/bert && /Users/solo/anaconda3/envs/tf1/bin/python extract_features.py \
   --input_file=/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/split_word.txt \
   --output_file=/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json \
@@ -250,7 +255,6 @@ class Preprocessor:
     def word_to_bert_emb(self):
         self.word_to_txt(self.id2w)
         self.txt_to_bert_emb()
-        self.load_bert_emb(BERT_EMB_PATH)
 
 
 if __name__ == '__main__':
