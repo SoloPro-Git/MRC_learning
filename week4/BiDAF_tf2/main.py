@@ -97,7 +97,7 @@ class BiDAF:
         cinn_w = tf.keras.layers.Input(shape=(self.clen,), name='context_input_word')
         qinn_w = tf.keras.layers.Input(shape=(self.qlen,), name='question_input_word')
         embedding_layer_word = tf.keras.layers.Embedding(self.vocab_size, self.emb_size, 
-            embeddings_initializer=tf.constant_initializer(self.embedding_matrix), trainable=False)
+            embeddings_initializer=tf.constant_initializer(np.array(self.embedding_matrix)), trainable=False)
 
         emb_cw = embedding_layer_word(cinn_w)
         emb_qw = embedding_layer_word(qinn_w)
@@ -242,57 +242,57 @@ def accuracy(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    ds = preprocess.Preprocessor([
-        './data/squad/train-v1.1.json',
-        './data/squad/dev-v1.1.json',
-        './data/squad/dev-v1.1.json'
-    ])
-    # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
-    # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
-
-    train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
-
-    test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
-
-    # ds.word_to_txt()
-    # ds.txt_to_bert_emb()
-    ds.load_bert_emb('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
-    # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
-
-    # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
-
-    data = [train_cw, train_qw, train_y,  test_cw, test_qw, test_y]
-    variable_name = list(dict(data=data).keys())[0]
-    np.save(f'save/{variable_name}.npy', data)
-
-    output_hal = open("save/ds.pkl", 'wb')
-    str = pickle.dumps(ds)
-    output_hal.write(str)
-    output_hal.close()
+    # ds = preprocess.Preprocessor([
+    #     './data/squad/train-v1.1.json',
+    #     './data/squad/dev-v1.1.json',
+    #     './data/squad/dev-v1.1.json'
+    # ])
+    # # train_c, train_q, train_y = ds.get_dataset_char('./data/squad/train-v1.1.json')
+    # # test_c, test_q, test_y = ds.get_dataset_char('./data/squad/dev-v1.1.json')
+    #
+    # train_cw, train_qw, train_y = ds.get_dataset('./data/squad/train-v1.1.json')
+    #
+    # test_cw, test_qw, test_y = ds.get_dataset('./data/squad/dev-v1.1.json')
+    #
+    # # ds.word_to_txt()
+    # # ds.txt_to_bert_emb()
+    # ds.load_bert_emb('/Users/solo/学习/nlp学习/基于大规模预训练模型的机器阅读理解/week4/BiDAF_tf2/data/output.json')
+    # # train_cc, train_qc, train_cw, train_qw, train_y = ds.get_dataset('./data/squad/test.json')
+    #
+    # # test_cc, test_qc, test_cw, test_qw, test_y = ds.get_dataset('./data/squad/test.json')
+    #
+    # data = [train_cw, train_qw, train_y,  test_cw, test_qw, test_y]
+    # variable_name = list(dict(data=data).keys())[0]
+    # np.save(f'save/{variable_name}.npy', data)
+    #
+    # output_hal = open("save/ds.pkl", 'wb')
+    # str = pickle.dumps(ds)
+    # output_hal.write(str)
+    # output_hal.close()
 
 
     with open("save//ds.pkl", 'rb') as file:
         ds = pickle.loads(file.read())
     data_load = np.load(f'save/data.npy')
-    train_cc, train_qc, train_cw, train_qw, train_y, test_cc, test_qc, test_cw, test_qw, test_y = data_load
+    train_cw, train_qw, train_y, test_cw, test_qw, test_y = data_load
 
-    print(train_cc.shape, train_qc.shape, train_cw.shape, train_qw.shape, train_y.shape)
-    print(test_cc.shape, test_qc.shape, test_cw.shape ,test_qw.shape, test_y.shape)
+    print(train_cw.shape, train_qw.shape, train_y.shape)
+    print(test_cw.shape ,test_qw.shape, test_y.shape)
 
     bidaf = BiDAF(
         clen=ds.max_clen,
         qlen=ds.max_qlen,
         max_char_len=ds.max_char_len,
         emb_size=len(ds.embedding_matrix[0]),
-        vocab_size = len(ds.word_list),
+        vocab_size = len(ds.w2id),
         embedding_matrix = ds.embedding_matrix,
-        max_features=len(ds.charset),
+        max_features=5000,
         conv_layers = [[10,1],[10,2],[30,3]]
     )
     bidaf.build_model()
     bidaf.model.fit(
-        [train_cc, train_qc, train_cw, train_qw], train_y,
+        [train_cw, train_qw], train_y,
         batch_size=64,
         epochs=10,
-        validation_data=([test_cc, test_qc, test_cw, test_qw], test_y)
+        validation_data=([ test_cw, test_qw], test_y)
     )

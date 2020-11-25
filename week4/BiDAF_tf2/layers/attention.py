@@ -28,7 +28,7 @@ class Q2CAttention(tf.keras.layers.Layer):
         # 4.加权求和：tf.math.reduce_sum
         simi_sum = tf.math.reduce_sum(tf.multiply(simi_sfmax_exp, cencode), axis=2)
         # 5.再次维度处理加权求和后的结果：tf.expand_dims
-        simi_sum = tf.math.reduce_sum(tf.multiply(simi_sfmax_exp, cencode), axis=2)
+        simi_sum = tf.math.reduce_sum(tf.multiply(simi_sfmax_exp, cencode), axis=1)
         # 6.获取重复的次数： cencode.shape[1]
         # 7.重复拼接获取最终矩阵：tf.tile
         simi_sum_exp = tf.expand_dims(simi_sum, axis=-2)
@@ -41,6 +41,10 @@ if __name__ == '__main__':
     g1 = tf.random_uniform_initializer(minval=0)
     simi = g1(shape=[2, 5, 8])
     q = tf.ones(shape=(2, 8, 10))
+    c = tf.ones(shape=(2, 5, 10))
 
     att_layer = C2QAttention()
     att_layer.call(simi, q)
+
+    att_layerq = Q2CAttention()
+    att_layerq.call(simi, c)
