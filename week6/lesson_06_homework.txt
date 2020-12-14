@@ -1,0 +1,11 @@
+﻿简答题： 
+
+
+
+1、ERNIE 1.0 (20'), XLNET(20'), RoBERTa(20'), ALBERT(20') 分别基于 BERT 做了哪些改进？
+
+
+
+
+
+2、ALBERT为什么用 SOP 任务替代BERT 中的 NSP 任务？(20')

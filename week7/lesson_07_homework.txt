@@ -1,0 +1,6 @@
+学习dureader 集成代码，补充ensemble.py 219行开始的集成部分
+按照给定的weight：权重为 0.4, 0.2, 0.4 对三个模型的logit加权求完成ensemble 计算：start_logits， end_logits
+
+1. weight 设定 (20)
+2. start_logits 读取每个模型中的logit(20'),加和计算（20）
+3. end_logits 读取每个模型中的logit(20),加和计算（20）
