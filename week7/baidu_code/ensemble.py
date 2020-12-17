@@ -32,12 +32,10 @@ from transformers.data.processors.squad import (
     SquadV2Processor,
 )
 
-
 try:
     from torch.utils.tensorboard import SummaryWriter
 except ImportError:
     from tensorboardX import SummaryWriter
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ def to_list(tensor):
 
 
 def load_and_cache_examples(
-    args, model_path1, tokenizer, evaluate=False, output_examples=False
+        args, model_path1, tokenizer, evaluate=False, output_examples=False
 ):
     if args.local_rank not in [-1, 0] and not evaluate:
         # Make sure only the first process in distributed training process the dataset, and the others will use the cache
@@ -93,8 +91,8 @@ def load_and_cache_examples(
         logger.info("Creating features from dataset file at %s", input_dir)
 
         if not args.data_dir and (
-            (evaluate and not args.predict_file)
-            or (not evaluate and not args.train_file)
+                (evaluate and not args.predict_file)
+                or (not evaluate and not args.train_file)
         ):
             try:
                 import tensorflow_datasets as tfds
@@ -217,6 +215,10 @@ def evaluate(args, model_path1, model1, model2, model3, tokenizer, prefix=""):
             start_logits3, end_logits3 = output3
 
             # TODO homework 补充模型集成代码 权重为 0.4, 0.2, 0.4 计算：start_logits， end_logits
+            weight = [0.4, 0.2, 0.4]
+
+            start_logits = start_logits1 * weight[0] + start_logits2 * weight[1] + start_logits3 * weight[2]
+            end_logits = end_logits1 * weight[0] + end_logits2 * weight[1] + end_logits3 * weight[2]
 
             result = SquadResult(unique_id, start_logits, end_logits)
 
@@ -298,21 +300,21 @@ def main():
         default=None,
         type=str,
         help="The input data dir. Should contain the .json files for the task."
-        + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
+             + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
     )
     parser.add_argument(
         "--train_file",
         default=None,
         type=str,
         help="The input training file. If a data dir is specified, will look for the file there"
-        + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
+             + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
     )
     parser.add_argument(
         "--predict_file",
         default=None,
         type=str,
         help="The input evaluation file. If a data dir is specified, will look for the file there"
-        + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
+             + "If no data dir or train/predict files are specified, will run with tensorflow_datasets.",
     )
     parser.add_argument(
         "--config_name",
@@ -350,7 +352,7 @@ def main():
         default=384,
         type=int,
         help="The maximum total input sequence length after WordPiece tokenization. Sequences "
-        "longer than this will be truncated, and sequences shorter than this will be padded.",
+             "longer than this will be truncated, and sequences shorter than this will be padded.",
     )
     parser.add_argument(
         "--doc_stride",
@@ -363,7 +365,7 @@ def main():
         default=64,
         type=int,
         help="The maximum number of tokens for the question. Questions longer than this will "
-        "be truncated to this length.",
+             "be truncated to this length.",
     )
     parser.add_argument(
         "--do_train", action="store_true", help="Whether to run training."
@@ -441,13 +443,13 @@ def main():
         default=30,
         type=int,
         help="The maximum length of an answer that can be generated. This is needed because the start "
-        "and end predictions are not conditioned on one another.",
+             "and end predictions are not conditioned on one another.",
     )
     parser.add_argument(
         "--verbose_logging",
         action="store_true",
         help="If true, all of the warnings related to data processing will be printed. "
-        "A number of warnings are expected for a normal SQuAD evaluation.",
+             "A number of warnings are expected for a normal SQuAD evaluation.",
     )
     parser.add_argument(
         "--lang_id",
@@ -503,7 +505,7 @@ def main():
         type=str,
         default="O1",
         help="For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
-        "See details at https://nvidia.github.io/apex/amp.html",
+             "See details at https://nvidia.github.io/apex/amp.html",
     )
     parser.add_argument(
         "--server_ip", type=str, default="", help="Can be used for distant debugging."
@@ -534,10 +536,10 @@ def main():
         )
 
     if (
-        os.path.exists(args.output_dir)
-        and os.listdir(args.output_dir)
-        and args.do_train
-        and not args.overwrite_output_dir
+            os.path.exists(args.output_dir)
+            and os.listdir(args.output_dir)
+            and args.do_train
+            and not args.overwrite_output_dir
     ):
         raise ValueError(
             "Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(
